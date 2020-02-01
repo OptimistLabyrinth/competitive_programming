@@ -1,0 +1,7 @@
+#ifndef CPP_17_TEST_ALGORITHM_AGGREGATE_H
+#define CPP_17_TEST_ALGORITHM_AGGREGATE_H
+
+#include "bfs_01/BFS.h"
+#include "dfs_01/DFS.h"
+
+#endif //CPP_17_TEST_ALGORITHM_AGGREGATE_H
