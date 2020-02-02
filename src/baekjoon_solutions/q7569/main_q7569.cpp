@@ -2,15 +2,14 @@
 #include <iomanip>
 #include <iostream>
 #include <set>
-#include <sstream>
 #include <vector>
 #include <unistd.h>
 
 using namespace std;
 
-struct vertex {
-    vertex(int row, int col, int height) : row(row), col(col), height(height) {}
-    bool operator== (const vertex& v) {
+struct tomato {
+    tomato(int row, int col, int height) : row(row), col(col), height(height) {}
+    bool operator== (const tomato& v) {
         return row == v.row and col == v.col and height == v.height;
     }
     int row;
@@ -25,13 +24,13 @@ vector<vector<vector<int>>> tomato_box;
 int row_step[6] = {-1, 0, 1, 0, 0, 0};
 int col_step[6] = {0, -1, 0, 1, 0, 0};
 int layer_step[6] = {0, 0, 0, 0, 1, -1};
-int number_of_initially_unmatured_tomato;
-int peiods_until_tomato_matured;
-vector<vertex> currently_matured_tomato;
-vector<vertex> newly_matured_tomato_vector;
+int number_of_initially_unripped_tomato;
+int peiods_until_tomato_ripped;
+vector<tomato> currently_ripped_tomato;
+vector<tomato> newly_ripped_tomato_vector;
 
-void mature_adjacent_tomato();
-bool cannot_mature_all_tomato();
+void ripe_adjacent_tomato();
+bool cannot_ripe_all_tomato();
 
 int main() {
     std::ios::sync_with_stdio(false); std::cin.tie(NULL); std::cout.tie(NULL);
@@ -39,13 +38,13 @@ int main() {
     std::cin >> horizontal_length >> vertical_length >> height_lenght;
     tomato_box.resize(height_lenght);
     for (auto& square : tomato_box) { square.resize(vertical_length, vector<int>(horizontal_length, 0)); }
-    number_of_initially_unmatured_tomato = 0;
+    number_of_initially_unripped_tomato = 0;
     for (int h = 0; h < height_lenght; ++h) {
         for (int c = 0; c < vertical_length; ++c) {
             for (int r = 0; r < horizontal_length; ++r) {
                 std::cin >> tomato_box[h][c][r];
                 if (tomato_box[h][c][r] == 0) {
-                    ++number_of_initially_unmatured_tomato;
+                    ++number_of_initially_unripped_tomato;
                 }
             }
         }
@@ -60,37 +59,37 @@ int main() {
 //        }
 //    }
 
-    if (number_of_initially_unmatured_tomato == 0) {
+    if (number_of_initially_unripped_tomato == 0) {
         cout << "0\n";
         return 0;
     }
 
     while (true) {
-        mature_adjacent_tomato();
-        if (newly_matured_tomato_vector.empty()) {
+        ripe_adjacent_tomato();
+        if (newly_ripped_tomato_vector.empty()) {
             break;
         }
-        ++peiods_until_tomato_matured;
+        ++peiods_until_tomato_ripped;
         sleep(1);
     }
 
-    if (cannot_mature_all_tomato()) {
+    if (cannot_ripe_all_tomato()) {
         cout << "-1\n";
     } else {
-        cout << peiods_until_tomato_matured << "\n";
+        cout << peiods_until_tomato_ripped << "\n";
     }
 
     return 0;
 }
 
-void mature_adjacent_tomato() {
-    currently_matured_tomato.clear();
-    newly_matured_tomato_vector.clear();
+void ripe_adjacent_tomato() {
+    currently_ripped_tomato.clear();
+    newly_ripped_tomato_vector.clear();
     for (int h = 0; h < height_lenght; ++h) {
         for (int c = 0; c < vertical_length; ++c) {
             for (int r = 0; r < horizontal_length; ++r) {
                 if (tomato_box[h][c][r] == 1) {
-                    currently_matured_tomato.emplace_back(r, c, h);
+                    currently_ripped_tomato.emplace_back(r, c, h);
                 }
             }
         }
@@ -107,7 +106,7 @@ void mature_adjacent_tomato() {
     int current_row = 0;
     int current_col = 0;
     int current_height = 0;
-    for (const auto& v : currently_matured_tomato) {
+    for (const auto& v : currently_ripped_tomato) {
         for (int i = 0; i < 6; ++i) {
             current_row = v.row + row_step[i];
             current_col = v.col + col_step[i];
@@ -117,19 +116,19 @@ void mature_adjacent_tomato() {
                 0 <= current_height and current_height < height_lenght and
                 tomato_box[current_height][current_col][current_row] == 0)
             {
-                newly_matured_tomato_vector.emplace_back(current_row, current_col, current_height);
+                newly_ripped_tomato_vector.emplace_back(current_row, current_col, current_height);
             }
         }
     }
-    std::unique(newly_matured_tomato_vector.begin(), newly_matured_tomato_vector.end());
-//    cout << "number of newly matured tomato: " << newly_matured_tomato_vector.size() << "\n";
-    for (const auto& vt : newly_matured_tomato_vector) {
+    std::unique(newly_ripped_tomato_vector.begin(), newly_ripped_tomato_vector.end());
+//    cout << "number of newly matured tomato: " << newly_ripped_tomato_vector.size() << "\n";
+    for (const auto& vt : newly_ripped_tomato_vector) {
         tomato_box[vt.height][vt.col][vt.row] = 1;
 //        cout << "    [h][c][r] => [" << vt.height << "][" << vt.col << "][" << vt.row << "]\n";
     }
 }
 
-bool cannot_mature_all_tomato() {
+bool cannot_ripe_all_tomato() {
     bool is_impossible = false;
     for (int h = 0; h < height_lenght; ++h) {
         for (int c = 0; c < vertical_length; ++c) {
