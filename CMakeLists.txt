@@ -3,7 +3,7 @@ project(competitive_programming)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(GLOG_ROOT_DIR ${CMAKE_SOURCE_DIR}/lib/glog)
+set(GLOG_ROOT_DIR /home/ksyoo/ksyooF/third_party/glog-0.4.0)
 set(GLOG_INCLUDE_DIR ${GLOG_ROOT_DIR}/include)
 set(GLOG_LIBRARY_DIR ${GLOG_ROOT_DIR}/lib)
 
